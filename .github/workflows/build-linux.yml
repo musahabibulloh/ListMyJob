@@ -1,0 +1,39 @@
+name: Build Linux AppImage
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    name: Build AppImage on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          # libvips is required by sharp; build-essential and python3 used for native builds
+          sudo apt-get install -y libvips-dev build-essential python3 pkg-config
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build Linux AppImage
+        run: npm run build:linux
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: release/*.AppImage

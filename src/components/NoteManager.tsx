@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Note } from '../types';
 import { StickyNoteIcon, PlusIcon, EditIcon, TrashIcon, XIcon, SaveIcon } from './Icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import Modal from './Modal';
 
 const NoteManager: React.FC = () => {
   const { t } = useLanguage();
@@ -67,8 +68,7 @@ const NoteManager: React.FC = () => {
       </div>
 
       {showForm && (
-        <div className="note-form">
-          <h3>{editingNote ? t('notes.edit') : t('notes.create')}</h3>
+        <Modal title={editingNote ? t('notes.edit') : t('notes.create')} onClose={() => { setShowForm(false); setEditingNote(null); }}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -140,7 +140,7 @@ const NoteManager: React.FC = () => {
               </button>
             </div>
           </form>
-        </div>
+        </Modal>
       )}
 
       <div className="notes-grid">

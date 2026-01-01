@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import JobForm from './components/JobForm';
+import Modal from './components/Modal';
 import JobList from './components/JobList';
 import PomodoroTimer from './components/PomodoroTimer';
 import NoteManager from './components/NoteManager';
@@ -47,7 +48,6 @@ function App() {
 
   const handleEditJob = (job: Job) => {
     setEditingJob(job);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const filteredJobs = jobs.filter((job) => {
@@ -117,10 +117,11 @@ function App() {
               <p>{t('jobs.subtitle')}</p>
             </div>
             <div className="menu-body">
+              {/* Keep the inline form for creating new jobs only (no pre-filled edit form at top) */}
               <JobForm
-                job={editingJob}
+                job={null}
                 onSave={handleSaveJob}
-                onCancel={() => setEditingJob(null)}
+                onCancel={() => {}}
               />
               <div className="filter-tabs">
                 <button
@@ -166,6 +167,19 @@ function App() {
                 onDelete={handleDeleteJob}
                 onStatusChange={handleSaveJob}
               />
+              {/* Edit modal: shown when editingJob is set */}
+              {editingJob && (
+                <Modal title={t('jobs.edit')} onClose={() => setEditingJob(null)}>
+                  <JobForm
+                    job={editingJob}
+                    onSave={(job) => {
+                      handleSaveJob(job);
+                      setEditingJob(null);
+                    }}
+                    onCancel={() => setEditingJob(null)}
+                  />
+                </Modal>
+              )}
             </div>
           </div>
         );
